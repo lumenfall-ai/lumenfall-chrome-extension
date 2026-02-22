@@ -1,0 +1,43 @@
+Lumenfall AI Image Studio brings AI image generation and editing directly into your browser. Generate stunning images from text prompts, edit any image on the web with a right-click, or let brainstorm mode automatically create visuals that match the page you're reading. With over 60 AI models to choose from, including free options, you have everything you need to create the perfect image without leaving Chrome.
+
+GENERATE AI IMAGES FROM TEXT
+
+Describe what you want and watch it come to life. Choose from over 60 AI image models ranging from fast drafts to high-quality renders. Select your preferred aspect ratio (square, landscape, portrait, ultrawide, and more), generate up to 4 images at once, and export in PNG, JPG, or WebP format. Every generation shows an estimated cost upfront so there are no surprises.
+
+EDIT IMAGES WITH AI
+
+Transform any image using AI-powered editing. Upload your own images, drag them in from your desktop, or right-click any image on any website and select "Edit with Lumenfall" to load it instantly into the editor. Describe the changes you want and let the AI handle the rest. Supports inpainting, style changes, and creative transformations.
+
+BRAINSTORM MODE: ONE-CLICK PAGE ILLUSTRATIONS
+
+This is where Lumenfall truly shines. Open any blog post, article, documentation page, or landing page, and click "Brainstorm this page." The extension reads the content, generates tailored image prompts, and creates matching visuals automatically. No prompt writing required.
+
+Use brainstorm mode to:
+- Create the perfect hero image for blog posts and articles
+- Illustrate documentation and guides with relevant visuals
+- Generate graphics for landing pages and marketing content
+- Quickly visualize ideas from any text-based content
+
+LOCAL GALLERY
+
+All your generated images are saved to a local gallery right inside the extension. Browse your creations, copy them to your clipboard, download them, or drag and drop them directly into any application or website. Your images stay on your device and are always accessible.
+
+DRAG AND DROP EVERYWHERE
+
+Lumenfall integrates seamlessly with your workflow. Drag images from the web into the extension for editing. Drag generated images from your gallery into emails, documents, design tools, or any website that accepts image uploads. It works just like moving files around on your desktop.
+
+60+ AI MODELS
+
+Access a wide selection of AI image models through the Lumenfall API. Models are organized by creator and capability, with detailed descriptions, pricing information, and sample outputs to help you pick the right one. Featured models are highlighted so you can quickly find what works best for your project.
+
+FREE MODELS AVAILABLE
+
+Get started without spending a dime. Free AI models are available so you can explore image generation right away. No subscription required. When you're ready for higher-quality results, premium models are available with transparent, pay-as-you-go pricing.
+
+BUILT FOR CHROME
+
+Lumenfall opens as a side panel in Chrome, always ready when you need it. Use the keyboard shortcut (Ctrl+Shift+L on Windows, Cmd+Shift+L on Mac) to open it instantly. The extension integrates with Chrome's context menu so you can edit any image on the web with a right-click. It stays out of your way until you need it.
+
+PRIVACY FIRST
+
+Your API key, generated images, and preferences are stored locally on your device. Nothing is synced to the cloud. Image generation requests are sent to the Lumenfall API, but your data is never sold or used for advertising. A clear privacy disclosure is shown on first use.

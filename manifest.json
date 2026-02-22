@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lumenfall AI Image Studio",
-  "description": "Generate and edit AI images in the browser. Access dozens of models from Flux, Recraft, Ideogram and more through one API key.",
+  "description": "Generate and edit AI images directly in Chrome. 60+ models, brainstorm mode, local gallery. Free models available.",
   "version": "0.1",
   "homepage_url": "https://lumenfall.ai",
   "icons": {
