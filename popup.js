@@ -1299,6 +1299,27 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
+// When a host permission is granted after handleImageUrl failed to fetch,
+// retry converting any raw URLs in pendingEditImages to data URLs for preview.
+chrome.permissions.onAdded.addListener(async () => {
+  const rawIndexes = pendingEditImages
+    .map((u, i) => (!u.startsWith("data:") && !u.startsWith("blob:")) ? i : -1)
+    .filter((i) => i >= 0);
+  if (!rawIndexes.length) return;
+
+  let changed = false;
+  for (const i of rawIndexes) {
+    try {
+      const dataUrl = await fetchImageAsDataUrl(pendingEditImages[i]);
+      pendingEditImages[i] = dataUrl;
+      changed = true;
+    } catch (_) {}
+  }
+  if (changed) {
+    setDropzoneState(`${pendingEditImages.length} image(s) loaded.`, pendingEditImages);
+  }
+});
+
 /* --- Content script helpers --- */
 
 async function getPageText() {

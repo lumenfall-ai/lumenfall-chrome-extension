@@ -24,7 +24,8 @@
     "sidePanel"
   ],
   "host_permissions": [
-    "https://api.lumenfall.ai/*"
+    "https://api.lumenfall.ai/*",
+    "https://media.lumenfall.ai/*"
   ],
   "optional_host_permissions": [
     "https://*/*"

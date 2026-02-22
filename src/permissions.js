@@ -1,10 +1,8 @@
-/**
- * Runtime host-permission helper.
- *
- * `https://*/*` lives in optional_host_permissions so the extension installs
- * without the scary "read and change all your data on all websites" warning.
- * We request access on demand when the user initiates an action that needs it.
- */
+// Runtime host-permission helper.
+//
+// https://*/* lives in optional_host_permissions so the extension installs
+// without the scary "read and change all your data on all websites" warning.
+// We request access on demand when the user initiates an action that needs it.
 
 /**
  * Ensure we have host permission for the given URL's origin.

@@ -29,20 +29,29 @@ chrome.runtime.onStartup.addListener(() => {
   ensureSidePanel();
 });
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== "lumenfall-edit-image") return;
   const imageUrl = info.srcUrl;
   if (!imageUrl) return;
 
-  // Fire storage write without awaiting — sidePanel.open() MUST be called
-  // synchronously in the user gesture context or Chrome rejects it.
-  chrome.storage.local.set({ pendingEditImage: imageUrl });
-
+  // Open the panel synchronously — must happen in the user gesture context.
   if (chrome.sidePanel) {
     chrome.sidePanel.open({ windowId: tab.windowId }).catch(() => {
       chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
     });
-    return;
+  } else {
+    chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
   }
-  chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
+
+  // Request host permission directly — call request() as the FIRST await so
+  // the user-gesture context from the context-menu click is still alive.
+  // (ensureHostAccess() breaks this because its contains() pre-check is the
+  // first await, consuming the gesture before request() runs.)
+  // request() resolves to true silently if permission is already granted.
+  try {
+    const { protocol, host } = new URL(imageUrl);
+    await chrome.permissions.request({ origins: [`${protocol}//${host}/*`] });
+  } catch (_) {}
+
+  chrome.storage.local.set({ pendingEditImage: imageUrl });
 });
