@@ -1,0 +1,82 @@
+/*
+ * Lumenfall Chrome Extension — Design Tokens
+ * Matches the dashboard themes defined in apps/platform application.css
+ * Colors use OKLCH color space for perceptual uniformity.
+ */
+
+:root {
+  color-scheme: light dark;
+  font-family: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+
+  --radius-box: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-selector: 1rem;
+}
+
+/* Light theme (default) — maps to platform base-200 (bg) / base-100 (card) */
+:root,
+[data-theme="light"] {
+  --bg: oklch(80% 0.01 90);
+  --card: oklch(88.7% 0.01 90);
+  --surface: oklch(75% 0.01 90);
+  --surface-hover: oklch(70% 0.01 90);
+  --text: oklch(34% 0.01 89);
+  --muted: oklch(34% 0.01 89 / 0.6);
+  --primary: oklch(93% 0.147 126);
+  --primary-content: oklch(34% 0.01 89);
+  --secondary: oklch(67% 0.16 43);
+  --secondary-content: oklch(32.6% 0.01 89);
+  --border: oklch(75% 0.01 90);
+  --accent: oklch(70% 0.04 150);
+  --info: oklch(72.9% 0.062 228.5);
+  --error: oklch(65% 0.2 25);
+  --warning: oklch(67% 0.16 43);
+  --shadow: 0 4px 12px rgba(64, 60, 52, 0.08);
+  --shadow-hover: 0 10px 25px -5px rgba(64, 60, 52, 0.1);
+}
+
+/* Dark theme — maps to platform base-200 (bg) / base-100 (card) */
+[data-theme="dark"] {
+  --bg: oklch(34% 0.01 89);
+  --card: oklch(28% 0.01 89);
+  --surface: oklch(39% 0.01 89);
+  --surface-hover: oklch(44% 0.01 89);
+  --text: oklch(85% 0.01 90);
+  --muted: oklch(85% 0.01 90 / 0.6);
+  --primary: oklch(93% 0.147 126);
+  --primary-content: oklch(28% 0.01 89);
+  --secondary: oklch(67% 0.16 43);
+  --secondary-content: oklch(28% 0.01 89);
+  --border: oklch(39% 0.01 89);
+  --accent: oklch(70% 0.04 150);
+  --info: oklch(72.9% 0.062 228.5);
+  --error: oklch(65% 0.2 25);
+  --warning: oklch(67% 0.16 43);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Auto: respect OS preference when no explicit theme is set */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(34% 0.01 89);
+    --card: oklch(28% 0.01 89);
+    --surface: oklch(39% 0.01 89);
+    --surface-hover: oklch(44% 0.01 89);
+    --text: oklch(85% 0.01 90);
+    --muted: oklch(85% 0.01 90 / 0.6);
+    --primary: oklch(93% 0.147 126);
+    --primary-content: oklch(28% 0.01 89);
+    --secondary: oklch(67% 0.16 43);
+    --secondary-content: oklch(28% 0.01 89);
+    --border: oklch(39% 0.01 89);
+    --accent: oklch(70% 0.04 150);
+    --info: oklch(72.9% 0.062 228.5);
+    --error: oklch(65% 0.2 25);
+    --warning: oklch(67% 0.16 43);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+}

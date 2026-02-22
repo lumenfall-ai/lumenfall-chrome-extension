@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lumenfall AI Image Studio</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <a href="https://lumenfall.ai" target="_blank" rel="noreferrer" class="logo-link">
+        <svg class="logo-mark" viewBox="0 0 888 82" xmlns="http://www.w3.org/2000/svg" aria-label="Lumenfall"><g transform="matrix(2.312306,0,0,2.312306,-1907.845728,-774.573728)"><g transform="matrix(50,0,0,50,818,370)"><path d="M0.142,-0L0.142,-0.7L0.312,-0.7L0.312,-0.15L0.713,-0.15L0.713,-0L0.142,-0Z"/></g><g transform="matrix(50,0,0,50,856.988,370)"><path d="M0.48,0.006C0.412,0.006 0.352,-0.008 0.3,-0.035C0.248,-0.063 0.208,-0.1 0.179,-0.148C0.15,-0.196 0.135,-0.25 0.135,-0.311L0.135,-0.7L0.307,-0.7L0.307,-0.317C0.307,-0.284 0.314,-0.254 0.329,-0.228C0.345,-0.202 0.365,-0.182 0.392,-0.167C0.418,-0.152 0.447,-0.145 0.48,-0.145C0.514,-0.145 0.544,-0.152 0.571,-0.167C0.598,-0.182 0.619,-0.202 0.635,-0.228C0.65,-0.254 0.658,-0.284 0.658,-0.317L0.658,-0.7L0.824,-0.7L0.824,-0.311C0.824,-0.25 0.809,-0.196 0.78,-0.148C0.751,-0.1 0.711,-0.063 0.66,-0.035C0.608,-0.008 0.548,0.006 0.48,0.006Z"/></g><g transform="matrix(50,0,0,50,905.001,370)"><path d="M0.142,-0L0.142,-0.7L0.294,-0.7L0.59,-0.298L0.489,-0.298L0.786,-0.7L0.936,-0.7L0.936,-0L0.771,-0L0.771,-0.224C0.771,-0.281 0.772,-0.334 0.775,-0.383C0.777,-0.431 0.783,-0.48 0.791,-0.529L0.808,-0.475L0.571,-0.17L0.505,-0.17L0.268,-0.475L0.287,-0.529C0.294,-0.481 0.3,-0.433 0.303,-0.385C0.306,-0.336 0.307,-0.283 0.307,-0.224L0.307,-0L0.142,-0Z"/></g><g transform="matrix(50,0,0,50,958.89,370)"><path d="M0.142,-0L0.142,-0.7L0.719,-0.7L0.719,-0.555L0.306,-0.555L0.306,-0.145L0.729,-0.145L0.729,-0L0.142,-0ZM0.228,-0.287L0.228,-0.425L0.674,-0.425L0.674,-0.287L0.228,-0.287Z"/></g><g transform="matrix(50,0,0,50,1001.04,370)"><path d="M0.142,-0L0.142,-0.7L0.3,-0.7L0.757,-0.2L0.73,-0.205C0.727,-0.229 0.724,-0.252 0.722,-0.275C0.719,-0.297 0.717,-0.318 0.716,-0.338C0.715,-0.359 0.714,-0.379 0.713,-0.399C0.712,-0.419 0.711,-0.44 0.71,-0.461C0.71,-0.482 0.71,-0.504 0.71,-0.527L0.71,-0.7L0.875,-0.7L0.875,-0L0.715,-0L0.242,-0.516L0.287,-0.509C0.289,-0.491 0.292,-0.474 0.293,-0.458C0.295,-0.442 0.297,-0.426 0.299,-0.409C0.301,-0.393 0.302,-0.376 0.303,-0.358C0.304,-0.34 0.305,-0.321 0.306,-0.301C0.307,-0.281 0.307,-0.258 0.307,-0.234L0.307,-0L0.142,-0Z"/></g><g transform="matrix(50,0,0,50,1051.879,370)"><path d="M0.142,-0L0.142,-0.7L0.312,-0.7L0.312,-0L0.142,-0ZM0.213,-0.262L0.213,-0.404L0.66,-0.404L0.66,-0.262L0.213,-0.262ZM0.222,-0.55L0.222,-0.7L0.701,-0.7L0.701,-0.55L0.222,-0.55Z"/></g><g transform="matrix(50,0,0,50,1089.183,370)"><path d="M0.042,-0L0.364,-0.7L0.519,-0.7L0.839,-0L0.664,-0L0.484,-0.393C0.478,-0.408 0.472,-0.422 0.466,-0.437C0.46,-0.451 0.454,-0.465 0.449,-0.478C0.444,-0.492 0.438,-0.506 0.434,-0.52C0.429,-0.534 0.425,-0.548 0.421,-0.561L0.457,-0.562C0.452,-0.547 0.448,-0.533 0.443,-0.519C0.438,-0.505 0.433,-0.491 0.427,-0.477C0.422,-0.463 0.416,-0.449 0.41,-0.435C0.404,-0.422 0.398,-0.407 0.392,-0.392L0.212,-0L0.042,-0ZM0.192,-0.128L0.247,-0.257L0.631,-0.257L0.665,-0.128L0.192,-0.128Z"/></g><g transform="matrix(50,0,0,50,1133.246,370)"><path d="M0.142,-0L0.142,-0.7L0.312,-0.7L0.312,-0.15L0.713,-0.15L0.713,-0L0.142,-0Z"/></g><g transform="matrix(50,0,0,50,1173.234,370)"><path d="M0.142,-0L0.142,-0.7L0.312,-0.7L0.312,-0.15L0.713,-0.15L0.713,-0L0.142,-0Z"/></g></g></svg>
+      </a>
+      <h1>AI Image Studio</h1>
+      <span id="balanceDisplay" class="balance-display hidden"></span>
+      <span id="settingsButton" class="settings-icon" title="Settings">&#9881;</span>
+    </header>
+
+    <!-- First-run data disclosure -->
+    <div id="consentOverlay" class="consent-overlay hidden">
+      <div class="consent-card">
+        <h2>Before you start</h2>
+        <p>Lumenfall AI Image Studio sends your prompts, uploaded images, and (in Brainstorm mode) text from the active page to <strong>api.lumenfall.ai</strong> for processing. All data is transmitted over HTTPS.</p>
+        <p>Your API key, generated images, and preferences are stored locally on your device and never synced.</p>
+        <p>Lumenfall does not sell your data or use it for advertising. <a href="https://lumenfall.ai/privacy" target="_blank" rel="noreferrer">Read our privacy policy</a></p>
+        <button id="consentAccept" class="primary consent-accept">Got it</button>
+      </div>
+    </div>
+
+    <!-- Low balance warning -->
+    <div id="lowBalanceBanner" class="warning hidden">
+      Low balance. <a href="https://lumenfall.ai/app/credits" target="_blank" rel="noreferrer">Add credits</a>
+    </div>
+
+    <!-- Settings panel -->
+    <section id="settingsPanel" class="card settings hidden">
+      <div class="settings-header">
+        <h2>Setup &amp; settings</h2>
+        <button id="closeSettings" class="icon-button" title="Close settings">&#10005;</button>
+      </div>
+      <div id="onboarding" class="onboarding">
+        <h3>Get started</h3>
+        <ol>
+          <li>Open <a href="https://lumenfall.ai" target="_blank" rel="noreferrer">lumenfall.ai</a> and create an account.</li>
+          <li>Create an API key in your dashboard.</li>
+          <li>Paste the key below to unlock the extension.</li>
+        </ol>
+      </div>
+      <label class="field">
+        <span>API Key</span>
+        <input type="password" id="apiKey" placeholder="Paste Lumenfall API key" />
+      </label>
+      <label class="field">
+        <span>Base URL</span>
+        <input type="text" id="baseUrl" placeholder="https://api.lumenfall.ai/openai/v1" />
+      </label>
+      <label class="field">
+        <span>Theme</span>
+        <select id="themeSelect">
+          <option value="auto">Auto (system)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <hr class="settings-divider" />
+      <h3>Brainstorm settings</h3>
+      <label class="field">
+        <span>Brainstorm model</span>
+        <select id="brainstormModel"></select>
+      </label>
+      <label class="field">
+        <span>Image model</span>
+        <select id="fastImageModel"></select>
+      </label>
+      <label class="field">
+        <span>System prompt <button class="reset-link" id="resetBrainstormPrompt">reset</button></span>
+        <textarea id="brainstormSystemPrompt" rows="2" placeholder="You are an article illustrator..."></textarea>
+      </label>
+      <div class="settings-actions">
+        <button id="saveSettings" class="primary">Save settings</button>
+        <button id="reloadModels" class="secondary">Reload models</button>
+        <button id="restoreDefaults" class="secondary">Restore defaults</button>
+      </div>
+      <div id="settingsStatus" class="status"></div>
+      <p class="subtext">Your API key is stored locally in Chrome and never synced.</p>
+      <div class="settings-links">
+        <a href="https://lumenfall.ai/models" target="_blank" rel="noreferrer">Browse models</a>
+        <span class="settings-links-sep">&middot;</span>
+        <a href="https://lumenfall.ai/app/credits" target="_blank" rel="noreferrer">Add credits</a>
+        <span class="settings-links-sep">&middot;</span>
+        <a href="https://docs.lumenfall.ai" target="_blank" rel="noreferrer">Docs</a>
+      </div>
+    </section>
+
+    <!-- Context menu onboarding tip -->
+    <div id="contextMenuTip" class="onboarding-tip hidden">
+      <p><strong>Tip:</strong> Right-click any image on a webpage and select "Edit with Lumenfall" to open it in the editor.</p>
+      <button id="dismissContextMenuTip" class="icon-button" title="Dismiss">&#10005;</button>
+    </div>
+
+    <!-- Tabs -->
+    <section class="tabs">
+      <button class="tab active" data-tab="generate">Generate</button>
+      <button class="tab" data-tab="brainstorm">Brainstorm</button>
+      <button class="tab" data-tab="gallery">
+        Gallery
+        <span id="galleryBadge" class="tab-badge hidden"></span>
+      </button>
+    </section>
+
+    <!-- Generate tab -->
+    <section class="tab-panel active" data-tab-panel="generate">
+      <div id="apiWarning" class="warning hidden"></div>
+
+      <!-- Input card -->
+      <div id="generateForm" class="generate-input-card">
+        <!-- Model selector trigger -->
+        <button id="modelSelectTrigger" class="model-select-trigger" type="button">
+          <span class="model-select-thumb" id="modelSelectThumb"></span>
+          <span class="model-select-name" id="modelSelectName">Select model</span>
+          <svg class="model-select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <!-- Hidden select for existing JS refs -->
+        <select id="modelSelect" class="hidden"></select>
+        <div id="editModelWarning" class="edit-model-warning hidden">
+          This model doesn't support image editing. Choose an edit model or remove input images.
+        </div>
+
+        <!-- Model selector overlay -->
+        <div id="modelSelectorOverlay" class="model-selector-overlay hidden">
+          <div class="model-selector-header">
+            <input id="modelSearchInput" type="text" class="model-search-input"
+              placeholder="Search models..." autocomplete="off" />
+            <button id="modelSelectorClose" class="model-selector-close icon-only" type="button">&#10005;</button>
+          </div>
+          <div id="modelSelectorList" class="model-selector-list"></div>
+          <div class="model-selector-footer">
+            <a href="https://lumenfall.ai/models" target="_blank" rel="noreferrer" class="model-selector-browse">
+              Browse all models &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Unified prompt container (matches platform playground) -->
+        <div class="generate-container-wrap">
+          <div id="generateContainer" class="generate-container">
+            <input type="file" id="imageUpload" accept="image/*" multiple class="hidden" />
+
+            <div class="generate-textarea-wrap">
+              <textarea id="prompt" rows="1" placeholder="Describe the image you want to generate..."></textarea>
+
+              <!-- Action bar (absolutely positioned at bottom of textarea) -->
+              <div class="generate-action-bar">
+                <div class="generate-action-bar-left">
+                  <button id="attachButton" class="generate-action-icon icon-only" type="button" title="Upload images">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                  </button>
+
+                  <div id="filePreviewContainer" class="file-preview-container"></div>
+
+                  <!-- Ratio picker -->
+                  <div class="generate-ratio-picker">
+                    <button id="ratioPickerBtn" class="generate-action-icon" type="button" title="Aspect ratio">
+                      <span id="ratioIcon" class="ratio-icon ratio-icon-1x1"></span>
+                      <span id="ratioLabel" class="ratio-label">1:1</span>
+                    </button>
+                    <div id="ratioDropdown" class="ratio-dropdown hidden">
+                      <button class="ratio-option" data-ratio="1:1">
+                        <div class="ratio-option-icon"><div class="ratio-icon ratio-icon-1x1"></div></div>
+                        <div class="ratio-option-text"><div class="ratio-option-label">1:1</div><div class="ratio-option-desc">Square</div></div>
+                      </button>
+                      <button class="ratio-option" data-ratio="16:9">
+                        <div class="ratio-option-icon"><div class="ratio-icon ratio-icon-16x9"></div></div>
+                        <div class="ratio-option-text"><div class="ratio-option-label">16:9</div><div class="ratio-option-desc">Landscape</div></div>
+                      </button>
+                      <button class="ratio-option" data-ratio="9:16">
+                        <div class="ratio-option-icon"><div class="ratio-icon ratio-icon-9x16"></div></div>
+                        <div class="ratio-option-text"><div class="ratio-option-label">9:16</div><div class="ratio-option-desc">Portrait</div></div>
+                      </button>
+                      <button class="ratio-option" data-ratio="4:3">
+                        <div class="ratio-option-icon"><div class="ratio-icon ratio-icon-4x3"></div></div>
+                        <div class="ratio-option-text"><div class="ratio-option-label">4:3</div><div class="ratio-option-desc">Classic</div></div>
+                      </button>
+                      <button class="ratio-option" data-ratio="3:4">
+                        <div class="ratio-option-icon"><div class="ratio-icon ratio-icon-3x4"></div></div>
+                        <div class="ratio-option-text"><div class="ratio-option-label">3:4</div><div class="ratio-option-desc">Portrait Classic</div></div>
+                      </button>
+                      <button class="ratio-option" data-ratio="21:9">
+                        <div class="ratio-option-icon"><div class="ratio-icon ratio-icon-21x9"></div></div>
+                        <div class="ratio-option-text"><div class="ratio-option-label">21:9</div><div class="ratio-option-desc">Ultrawide</div></div>
+                      </button>
+                    </div>
+                    <select id="ratioSelect" class="hidden">
+                      <option value="1:1">1:1</option>
+                      <option value="16:9">16:9</option>
+                      <option value="9:16">9:16</option>
+                      <option value="4:3">4:3</option>
+                      <option value="3:4">3:4</option>
+                      <option value="21:9">21:9</option>
+                    </select>
+                  </div>
+
+                  <select id="generateCount" class="generate-count-select" title="Number of images">
+                    <option value="1">&times;1</option>
+                    <option value="2">&times;2</option>
+                    <option value="3">&times;3</option>
+                    <option value="4">&times;4</option>
+                  </select>
+                  <select id="outputFormatSelect" class="generate-count-select" title="Output format">
+                    <option value="">PNG</option>
+                    <option value="jpeg">JPG</option>
+                    <option value="webp">WebP</option>
+                  </select>
+                </div>
+
+                <div class="generate-action-bar-right">
+                  <button id="resetFormButton" class="generate-action-icon icon-only" type="button" title="Reset form">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                      <path d="M3 3v5h5"/>
+                    </svg>
+                  </button>
+                  <span id="costEstimate" class="cost-estimate hidden">
+                    Est. <span id="costValue">$0.00</span>
+                  </span>
+                  <button id="generateButton" class="primary generate-run-btn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6,3 20,12 6,21"></polygon></svg>
+                    <span>Run</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drag overlay (hidden by default, shown on dragover) -->
+          <div id="dragOverlay" class="drag-overlay" hidden>
+            <div class="drag-overlay-content">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <div>Drop images here</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="status" id="generateInputStatus"></div>
+      </div>
+
+      <!-- Output card (shown after generation) -->
+      <div id="generateOutput" class="card generate-output-card hidden">
+        <div class="generate-section-label">Output</div>
+        <div class="status" id="generateStatus"></div>
+        <div id="generateResults" class="generate-results"></div>
+      </div>
+    </section>
+
+    <!-- Brainstorm tab -->
+    <section class="card tab-panel" data-tab-panel="brainstorm">
+      <div class="warning hidden" id="brainstormWarning"></div>
+      <h2>Brainstorm</h2>
+      <div id="brainstormWelcome" class="brainstorm-welcome">
+        <p class="brainstorm-intro">Turn any content into visuals. Brainstorm reads the current page, understands its context, and generates tailored images automatically.</p>
+        <div class="brainstorm-examples">
+          <div class="brainstorm-example">
+            <strong>Articles &amp; blogs</strong>
+            <span>Illustrate a post with header images and inline visuals.</span>
+          </div>
+          <div class="brainstorm-example">
+            <strong>Docs &amp; guides</strong>
+            <span>Add diagrams and conceptual art to technical content.</span>
+          </div>
+          <div class="brainstorm-example">
+            <strong>Landing pages</strong>
+            <span>Generate hero images and section graphics that match your copy.</span>
+          </div>
+        </div>
+      </div>
+      <p class="brainstorm-disclosure">Brainstorm reads text from the current page and sends it to api.lumenfall.ai to generate image prompts.</p>
+      <button id="brainstormButton" class="primary">Brainstorm this page</button>
+      <div class="status" id="brainstormStatus"></div>
+      <div id="extractedText" class="extracted-text hidden">
+        <button id="extractedTextToggle" class="extracted-text-toggle">Extracted text &#9662;</button>
+        <div id="extractedTextBody" class="extracted-text-body hidden"></div>
+      </div>
+      <div id="brainstormResults" class="brainstorm-results"></div>
+    </section>
+
+    <!-- Gallery tab -->
+    <section class="card tab-panel" data-tab-panel="gallery">
+      <div class="gallery-header">
+        <h2>Gallery</h2>
+        <button id="clearGallery" class="secondary">Clear all</button>
+      </div>
+      <div id="galleryGrid" class="gallery-grid"></div>
+      <div id="galleryEmpty" class="gallery-empty hidden">
+        <p>No images yet. Generate one to get started.</p>
+      </div>
+    </section>
+
+    <script src="src/permissions.js"></script>
+    <script src="src/models.js"></script>
+    <script src="src/api.js"></script>
+    <script src="src/storage.js"></script>
+    <script src="src/theme.js"></script>
+    <script src="src/gallery.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

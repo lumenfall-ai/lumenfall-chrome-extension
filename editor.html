@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lumenfall Image Editor</title>
+    <link rel="stylesheet" href="editor.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Lumenfall Image Editor</h1>
+      <p>Edit an existing image with Lumenfall models.</p>
+    </header>
+
+    <section class="card">
+      <h2>Image</h2>
+      <label class="field">
+        <span>Image URL</span>
+        <input type="text" id="imageUrl" placeholder="https://..." />
+      </label>
+      <img id="sourceImage" alt="Source" />
+    </section>
+
+    <section class="card">
+      <h2>Edit</h2>
+      <label class="field">
+        <span>Model</span>
+        <select id="editModel"></select>
+      </label>
+      <label class="field">
+        <span>Edit prompt</span>
+        <textarea id="editPrompt" rows="4" placeholder="Describe the edit (e.g., remove background)"></textarea>
+      </label>
+      <button id="editButton" class="primary">Run edit</button>
+      <div class="status" id="editStatus"></div>
+    </section>
+
+    <section class="card">
+      <h2>Results</h2>
+      <div id="editResults" class="results"></div>
+    </section>
+
+    <script src="src/models.js"></script>
+    <script src="src/api.js"></script>
+    <script src="src/storage.js"></script>
+    <script src="src/theme.js"></script>
+    <script src="editor.js"></script>
+  </body>
+</html>

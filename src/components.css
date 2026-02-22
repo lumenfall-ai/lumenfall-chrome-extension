@@ -1,0 +1,267 @@
+/*
+ * Lumenfall Chrome Extension — Shared Component Styles
+ * Used by both popup and editor pages.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* --- Cards --- */
+
+.card {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-box);
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+
+.card h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+/* --- Form fields --- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.field span {
+  color: var(--muted);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+input,
+select,
+textarea {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-field);
+  color: var(--text);
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+select {
+  padding-right: 24px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px oklch(70% 0.04 150 / 0.25);
+}
+
+.field-error {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 2px oklch(65% 0.2 25 / 0.2) !important;
+}
+
+/* --- Buttons --- */
+
+button {
+  border: none;
+  border-radius: var(--radius-field);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(70, 66, 58, 0.12);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+button.primary {
+  background: var(--primary);
+  color: var(--primary-content);
+}
+
+button.secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.icon-button {
+  border: 0.5px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius-box);
+  padding: 4px 8px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* --- Status & warnings --- */
+
+.status {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.warning {
+  background: oklch(67% 0.16 43 / 0.14);
+  border: 0.5px solid oklch(67% 0.16 43 / 0.35);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: var(--radius-box);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.info-banner {
+  background: oklch(72.9% 0.062 228.5 / 0.12);
+  border: 0.5px solid oklch(72.9% 0.062 228.5 / 0.3);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: var(--radius-box);
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-banner span {
+  flex: 1;
+}
+
+.subtext {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+/* --- Action rows --- */
+
+.action-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-row button {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* --- Results --- */
+
+.results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.result-card {
+  background: var(--card);
+  border-radius: var(--radius-box);
+  border: 0.5px solid var(--border);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-card img {
+  width: 100%;
+  border-radius: var(--radius-field);
+}
+
+/* --- Spinner --- */
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary-content);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Utilities --- */
+
+.hidden {
+  display: none !important;
+}
+
+.reset-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 400;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.reset-link:hover {
+  transform: none;
+  box-shadow: none;
+}
