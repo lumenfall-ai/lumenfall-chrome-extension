@@ -2,7 +2,7 @@
 
 ## Architecture
 
-Manifest V3 Chrome extension (v0.2.0). No build tooling — shared modules in `src/` are loaded via `<script>` tags before page-specific JS. Sidebar is the default display mode via `chrome.sidePanel` API.
+Manifest V3 Chrome extension (v0.1). No build tooling — shared modules in `src/` are loaded via `<script>` tags before page-specific JS. Sidebar is the default display mode via `chrome.sidePanel` API.
 
 ### File Structure
 

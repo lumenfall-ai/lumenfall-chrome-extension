@@ -2,9 +2,11 @@
 
 All notable changes to the Lumenfall Chrome Extension will be documented in this file.
 
-## [0.2.0] - 2025-02-12
+## [0.1] - 2026-02-22
 
-### Added
+Initial release.
+
+- Image generation, editing, and basic gallery.
 - Rich model selector with thumbnails, descriptions, pricing, and search.
 - Dual-category badges for models that support both generation and editing.
 - Output format selector (PNG, JPG, WebP) in the action bar.
@@ -19,14 +21,5 @@ All notable changes to the Lumenfall Chrome Extension will be documented in this
 - Light, dark, and auto theme support (OKLCH color system matching the Lumenfall dashboard).
 - Keyboard shortcut: Ctrl+Shift+L / Cmd+Shift+L to open the extension.
 - Reduced motion support for users who prefer minimal animations.
-
-### Fixed
-- Download filenames now use the correct extension based on the actual image format.
-- Model selector hover no longer clips the selected card's outline.
-
-## [0.1.0] - 2025-01-15
-
-### Added
-- Initial release with image generation, editing, and basic gallery.
 - API key setup via settings panel.
 - Side panel and popup display modes.
