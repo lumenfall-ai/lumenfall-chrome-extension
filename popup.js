@@ -935,13 +935,12 @@ async function fetchBalance() {
       headers: { Authorization: `Bearer ${apiKey}` }
     });
 
-    if (data.billing_type === "postpaid" || data.credits_remaining == null) {
+    const amount = data.available?.amount;
+    if (data.billing_type === "postpaid" || amount == null) {
       balanceDisplay.classList.add("hidden");
       lowBalanceBanner.classList.add("hidden");
       return;
     }
-
-    const amount = data.credits_remaining;
     balanceDisplay.textContent = `$${amount.toFixed(2)}`;
     balanceDisplay.classList.remove("hidden");
 
