@@ -50,6 +50,10 @@ async function fetchJson(url, options = {}, { timeoutMs = 60000 } = {}) {
       const message = data?.error?.message || data?.message || `Request failed (${response.status})`;
       throw new Error(message);
     }
+    // Some APIs return 200 with an error body
+    if (data?.error?.message) {
+      throw new Error(data.error.message);
+    }
     return data;
   } catch (error) {
     if (error.name === "AbortError") {

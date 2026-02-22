@@ -1104,6 +1104,10 @@ async function handleGenerate() {
       urls = normalizeImageData(data);
     }
 
+    if (!urls.length) {
+      throw new Error("No images were returned. Try a different prompt or model.");
+    }
+
     const durationMs = Math.round(performance.now() - startTime);
 
     // Save to gallery + show inline results (progressive: fill each card as data arrives)
