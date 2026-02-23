@@ -12,21 +12,57 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
+/* --- Blob cache for drag-and-drop ---
+ * dataTransfer is only writable during the synchronous dragstart handler.
+ * Blobs MUST be ready in memory before the user starts dragging — any async
+ * work (fetch, etc.) after dragstart is too late.
+ * See: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_data_store
+ */
+const blobCache = new Map();
+
+async function prefetchBlob(imageUrl) {
+  if (blobCache.has(imageUrl)) return;
+  try {
+    if (imageUrl.startsWith("data:")) {
+      blobCache.set(imageUrl, dataUrlToBlob(imageUrl));
+    } else {
+      const res = await fetch(imageUrl);
+      const blob = await res.blob();
+      blobCache.set(imageUrl, blob);
+    }
+  } catch (_) {
+    // Non-fatal — drag will still carry URL fallbacks
+  }
+}
+
 function setupDragSource(element, item, card) {
   element.draggable = true;
+
+  // Prefetch immediately so the blob is ready for dragstart
+  prefetchBlob(item.url);
+
+  // Safety net: also prefetch on hover in case the image wasn't cached yet
+  element.addEventListener("mouseenter", () => prefetchBlob(item.url));
+
   element.addEventListener("dragstart", (e) => {
     card.classList.add("dragging");
 
-    // Set URL data for simple drop targets (e.g. another browser tab)
-    if (item.url.startsWith("data:")) {
-      const blob = dataUrlToBlob(item.url);
+    // Attach a real File so drop targets that expect dataTransfer.files work.
+    // This is indistinguishable from a file dragged from the OS file explorer.
+    const blob = blobCache.get(item.url);
+    if (blob) {
       const file = new File([blob], lumenfallFilename(item.url), { type: blob.type || "image/png" });
       try {
         e.dataTransfer.items.add(file);
       } catch (_) {
         // Fallback: some browsers don't support items.add(File)
       }
-      const blobUrl = URL.createObjectURL(blob);
+    }
+
+    // Set URL fallbacks for targets that accept URLs (e.g. WYSIWYG editors)
+    if (item.url.startsWith("data:")) {
+      const urlBlob = blob || dataUrlToBlob(item.url);
+      const blobUrl = URL.createObjectURL(urlBlob);
       e.dataTransfer.setData("text/uri-list", blobUrl);
       e.dataTransfer.setData("text/plain", blobUrl);
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
@@ -34,35 +70,13 @@ function setupDragSource(element, item, card) {
       e.dataTransfer.setData("text/uri-list", item.url);
       e.dataTransfer.setData("text/plain", item.url);
     }
-    e.dataTransfer.effectAllowed = "copyMove";
 
-    // Store the image in chrome.storage and inject a content script into the
-    // active tab.  The content script intercepts the drop event on the target
-    // page and reconstructs a proper File object so file-upload dropzones work.
-    const dataUrl = item.url.startsWith("data:") ? item.url : null;
-    if (dataUrl) {
-      chrome.storage.local.set({ pendingDragImage: dataUrl });
-      injectDragDropHelper();
-    }
+    e.dataTransfer.effectAllowed = "copy";
   });
+
   element.addEventListener("dragend", () => {
     card.classList.remove("dragging");
-    // Clean up pending drag data
-    chrome.storage.local.remove("pendingDragImage");
   });
-}
-
-async function injectDragDropHelper() {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (!tab?.id || !tab.url || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) return;
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["src/drag-drop-helper.js"]
-    });
-  } catch (_) {
-    // Injection may fail on restricted pages — drag will still work for URL-based targets
-  }
 }
 
 function renderGallery(items) {

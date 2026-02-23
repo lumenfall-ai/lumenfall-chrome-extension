@@ -1177,6 +1177,11 @@ body {
   display: block;
   object-fit: contain;
   max-height: 400px;
+  cursor: grab;
+}
+
+.generate-result-img img:active {
+  cursor: grabbing;
 }
 
 .generate-result-actions {
@@ -1323,6 +1328,11 @@ body {
   display: block;
   object-fit: contain;
   max-height: 260px;
+  cursor: grab;
+}
+
+.brainstorm-card-img img:active {
+  cursor: grabbing;
 }
 
 .brainstorm-card-loading {
@@ -1524,7 +1534,9 @@ body {
   vertical-align: middle;
 }
 
-.gallery-item.dragging {
+.gallery-item.dragging,
+.brainstorm-card.dragging,
+.generate-result-card.dragging {
   opacity: 0.5;
   transform: scale(0.97);
 }

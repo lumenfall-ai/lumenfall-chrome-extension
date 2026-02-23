@@ -1450,6 +1450,7 @@ function fillBrainstormCard(card, imageUrl, prompt) {
   img.src = imageUrl;
   img.alt = prompt;
   img.loading = "lazy";
+  setupDragSource(img, { url: imageUrl, prompt }, card);
   imgWrap.appendChild(img);
 
   // Show actions
