@@ -29,6 +29,56 @@ chrome.runtime.onStartup.addListener(() => {
   ensureSidePanel();
 });
 
+/* ---------- Drag-and-drop relay ----------
+ * Chrome doesn't transfer dataTransfer.files from the extension side-panel to
+ * web pages.  We bridge this by:
+ *   1. Side panel sends image data here on dragstart.
+ *   2. We inject content-drop.js into the active tab (captures drop events).
+ *   3. The content script requests the image data back from us and creates a
+ *      real File in the page context.
+ */
+let pendingDragData = null;
+
+async function injectDropHandler(tabId) {
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files: ["src/content-drop.js"],
+    });
+  } catch (err) {
+    console.warn("[drag] inject failed (host permission?):", err.message);
+  }
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "lumenfall-drag-start") {
+    pendingDragData = {
+      imageDataUrl: message.imageDataUrl,
+      filename: message.filename,
+    };
+    // Inject the drop handler into the active tab (best-effort)
+    chrome.tabs
+      .query({ active: true, currentWindow: true })
+      .then(([tab]) => tab && injectDropHandler(tab.id));
+    return;
+  }
+
+  if (message.type === "lumenfall-get-drag-data") {
+    console.log("[drag] content script requested drag data, available:", !!pendingDragData);
+    sendResponse(pendingDragData);
+    pendingDragData = null;
+    return true; // keep channel open for sendResponse
+  }
+
+  if (message.type === "lumenfall-inject-drop-handler") {
+    chrome.tabs
+      .query({ active: true, currentWindow: true })
+      .then(([tab]) => tab && injectDropHandler(tab.id));
+    return;
+  }
+});
+
+/* ---------- Context menu ---------- */
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== "lumenfall-edit-image") return;
   const imageUrl = info.srcUrl;

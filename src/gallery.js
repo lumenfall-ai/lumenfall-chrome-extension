@@ -44,69 +44,54 @@ async function prefetchBlob(imageUrl) {
 function setupDragSource(element, item, card) {
   element.draggable = true;
 
-  console.log("[drag] setupDragSource:", element.tagName, "url type:", item.url.startsWith("data:") ? "data:" + item.url.slice(5, 30) : item.url.slice(0, 80));
-
-  // Prefetch immediately so the blob is ready for dragstart
+  // Prefetch blob so it's ready for dragstart
   prefetchBlob(item.url);
-
-  // Safety net: also prefetch on hover in case the image wasn't cached yet
   element.addEventListener("mouseenter", () => prefetchBlob(item.url));
 
   element.addEventListener("dragstart", (e) => {
     card.classList.add("dragging");
 
-    // Chrome auto-populates dataTransfer when dragging an <img> — it adds its
-    // own file, text/html, and text/uri-list entries.  Clear them so we have
-    // full control over what the drop target receives (one clean File, one URL).
-    console.log("[drag] dragstart: browser default items.length:", e.dataTransfer.items.length);
-    for (let i = 0; i < e.dataTransfer.items.length; i++) {
-      const it = e.dataTransfer.items[i];
-      console.log("[drag] dragstart:   default[" + i + "]:", "kind=" + it.kind, "type=" + it.type);
-    }
+    // Clear Chrome's auto-populated items (native file, text/html, text/uri-list)
+    // so we have full control over what's in the dataTransfer.
     e.dataTransfer.items.clear();
-    console.log("[drag] dragstart: cleared browser defaults, items.length:", e.dataTransfer.items.length);
 
+    // --- Content-script bridge ---
+    // Chrome doesn't transfer dataTransfer.files across the extension → page
+    // boundary.  Send the image data to the background script so our content
+    // script (content-drop.js) can reconstruct a real File in the page context.
+    const filename = lumenfallFilename(item.url);
+    chrome.runtime.sendMessage({
+      type: "lumenfall-drag-start",
+      imageDataUrl: item.url,
+      filename,
+    });
+
+    // Marker type so content-drop.js can identify our drag during dragover
+    e.dataTransfer.setData("text/x-lumenfall-image", "1");
+
+    // Best-effort: also attach a File directly (works if the drop target is
+    // within the extension, and might work on some browsers/targets).
     const blob = blobCache.get(item.url);
-    console.log("[drag] dragstart: blob from cache:", blob ? `${blob.type} ${blob.size}B` : "MISS (not in cache)");
-
     if (blob) {
-      const filename = lumenfallFilename(item.url);
       const file = new File([blob], filename, { type: blob.type || "image/png" });
-      console.log("[drag] dragstart: created File:", file.name, file.type, file.size, "bytes");
-      try {
-        e.dataTransfer.items.add(file);
-        console.log("[drag] dragstart: items.add(file) OK — items.length:", e.dataTransfer.items.length);
-      } catch (err) {
-        console.error("[drag] dragstart: items.add(file) FAILED:", err);
-      }
+      try { e.dataTransfer.items.add(file); } catch (_) {}
     }
 
-    // For remote URLs, set text/uri-list so targets that accept URLs (e.g.
-    // WYSIWYG editors) can fetch the image themselves.  For data-URL images we
-    // intentionally omit text/uri-list — the only URL we could provide is a
-    // blob:chrome-extension:// URL which is invisible to web pages and causes
-    // sites to either navigate away or silently fail.
+    // For remote URLs, provide a fetchable URL for targets that prefer URLs
     if (!item.url.startsWith("data:")) {
       e.dataTransfer.setData("text/uri-list", item.url);
       e.dataTransfer.setData("text/plain", item.url);
-      console.log("[drag] dragstart: set text/uri-list →", item.url.slice(0, 80));
-    } else {
-      console.log("[drag] dragstart: data URL image — skipping text/uri-list (blob URLs are extension-scoped)");
     }
 
     e.dataTransfer.effectAllowed = "copy";
 
-    // Log the final state of the dataTransfer
-    console.log("[drag] dragstart: final items.length:", e.dataTransfer.items.length, "types:", [...e.dataTransfer.types]);
-    for (let i = 0; i < e.dataTransfer.items.length; i++) {
-      const it = e.dataTransfer.items[i];
-      console.log("[drag] dragstart:   final[" + i + "]:", "kind=" + it.kind, "type=" + it.type);
-    }
+    console.log("[drag] dragstart: types:", [...e.dataTransfer.types],
+      "items:", e.dataTransfer.items.length,
+      "sent to background for content-script relay");
   });
 
   element.addEventListener("dragend", () => {
     card.classList.remove("dragging");
-    console.log("[drag] dragend");
   });
 }
 
@@ -114,6 +99,12 @@ function renderGallery(items) {
   const grid = document.getElementById("galleryGrid");
   const empty = document.getElementById("galleryEmpty");
   if (!grid || !empty) return;
+
+  // Pre-inject the drop handler into the active tab so it's ready before
+  // the user starts dragging.  Silently ignored if host permission is missing.
+  if (items.length) {
+    chrome.runtime.sendMessage({ type: "lumenfall-inject-drop-handler" });
+  }
 
   grid.innerHTML = "";
 
