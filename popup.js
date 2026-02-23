@@ -998,7 +998,7 @@ async function loadModels() {
 let generateAbort = null;
 
 async function generateImages({ apiKey, baseUrl, model, prompt, aspect_ratio, n = 1, output_format, signal }) {
-  const body = { model, prompt, aspect_ratio, n };
+  const body = { model, prompt, aspect_ratio, n, response_format: "b64_json" };
   if (output_format) body.output_format = output_format;
   return fetchJson(`${baseUrl}/images/generations`, {
     method: "POST",
@@ -1015,6 +1015,7 @@ async function editImage({ apiKey, baseUrl, model, prompt, imageData, output_for
   const form = new FormData();
   form.append("model", model);
   form.append("prompt", prompt);
+  form.append("response_format", "b64_json");
   if (output_format) form.append("output_format", output_format);
 
   if (imageData?.startsWith("data:")) {
