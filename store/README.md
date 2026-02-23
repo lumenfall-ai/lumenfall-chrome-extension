@@ -75,6 +75,12 @@ Adds an "Edit with Lumenfall" item to the right-click context menu on images. Th
 The entire extension UI is rendered as a Chrome side panel. This permission is required to register and display the side panel.
 ```
 
+**tabs**
+
+```
+Queries the active tab's URL to determine whether the extension already has host access before attempting to inject the drag-and-drop helper script. Also used to detect tab switches so the permission-request banner in the side panel can be dismissed when the user navigates away. No browsing history is collected or transmitted.
+```
+
 **Host permission (`https://api.lumenfall.ai/*`)**
 
 ```
