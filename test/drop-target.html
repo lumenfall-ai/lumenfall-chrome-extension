@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drop Zone Test</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 24px; }
+  h1 { margin-bottom: 16px; color: #fff; }
+
+  #dropzone {
+    width: 100%; height: 260px;
+    border: 3px dashed #555; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2em; color: #888;
+    transition: all .15s;
+    margin-bottom: 24px;
+  }
+  #dropzone.over {
+    border-color: #4fc3f7; background: rgba(79,195,247,.08);
+    color: #4fc3f7;
+  }
+  #dropzone.dropped {
+    border-color: #66bb6a; background: rgba(102,187,106,.08);
+    color: #66bb6a;
+  }
+
+  #log { font-family: 'Menlo', 'Consolas', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+  .section { margin-bottom: 16px; background: #16213e; border-radius: 8px; padding: 16px; }
+  .section h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: #4fc3f7; margin-bottom: 8px; }
+  .entry { margin-bottom: 4px; }
+  .label { color: #aaa; }
+  .value { color: #fff; }
+  .warn  { color: #ffb74d; }
+  .error { color: #ef5350; }
+  .ok    { color: #66bb6a; }
+
+  #preview-area { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  #preview-area img { max-width: 200px; max-height: 200px; border-radius: 6px; border: 1px solid #333; }
+
+  button { background: #333; color: #fff; border: 1px solid #555; padding: 6px 14px; border-radius: 6px; cursor: pointer; margin-bottom: 16px; }
+  button:hover { background: #444; }
+</style>
+</head>
+<body>
+
+<h1>Drop Zone Test</h1>
+<button id="clear-btn">Clear log</button>
+
+<div id="dropzone">Drop an image here</div>
+<div id="preview-area"></div>
+<div id="log"></div>
+
+<script>
+const dz = document.getElementById('dropzone');
+const log = document.getElementById('log');
+const previewArea = document.getElementById('preview-area');
+let dropCount = 0;
+
+document.getElementById('clear-btn').addEventListener('click', () => {
+  log.innerHTML = '';
+  previewArea.innerHTML = '';
+  dropCount = 0;
+  dz.className = '';
+  dz.textContent = 'Drop an image here';
+});
+
+// ── helpers ──────────────────────────────────────────────────────────
+function section(title) {
+  const el = document.createElement('div');
+  el.className = 'section';
+  el.innerHTML = `<h2>${esc(title)}</h2>`;
+  return el;
+}
+
+function line(label, value, cls = 'value') {
+  const el = document.createElement('div');
+  el.className = 'entry';
+  el.innerHTML = `<span class="label">${esc(label)}: </span><span class="${cls}">${esc(String(value))}</span>`;
+  return el;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function truncate(s, max = 200) {
+  return s.length > max ? s.slice(0, max) + '...' : s;
+}
+
+function showPreview(src, label) {
+  const img = document.createElement('img');
+  img.src = src;
+  img.title = label;
+  previewArea.appendChild(img);
+}
+
+// ── dragover / dragenter / dragleave ─────────────────────────────────
+dz.addEventListener('dragenter', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragover',  e => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+dz.addEventListener('dragleave', e => { dz.classList.remove('over'); });
+
+// ── drop ─────────────────────────────────────────────────────────────
+dz.addEventListener('drop', async e => {
+  e.preventDefault();
+  e.stopPropagation();
+  dz.classList.remove('over');
+  dz.classList.add('dropped');
+  dz.textContent = 'Received!';
+  dropCount++;
+
+  const dt = e.dataTransfer;
+  const s = section(`Drop #${dropCount}`);
+
+  // 1. Summary
+  s.appendChild(line('dataTransfer.types', JSON.stringify([...dt.types])));
+  s.appendChild(line('dataTransfer.files.length', dt.files.length));
+  s.appendChild(line('dataTransfer.items.length', dt.items.length));
+  s.appendChild(line('effectAllowed', dt.effectAllowed));
+  s.appendChild(line('dropEffect', dt.dropEffect));
+
+  // 2. Enumerate items
+  const itemsHeader = document.createElement('h2');
+  itemsHeader.textContent = 'DataTransferItemList';
+  itemsHeader.style.cssText = 'font-size:13px;color:#4fc3f7;margin-top:12px;margin-bottom:6px;';
+  s.appendChild(itemsHeader);
+
+  for (let i = 0; i < dt.items.length; i++) {
+    const item = dt.items[i];
+    s.appendChild(line(`  items[${i}].kind`, item.kind));
+    s.appendChild(line(`  items[${i}].type`, item.type));
+
+    if (item.kind === 'string') {
+      const str = await new Promise(r => item.getAsString(r));
+      s.appendChild(line(`  items[${i}].value`, truncate(str), 'ok'));
+    }
+
+    if (item.kind === 'file') {
+      const file = item.getAsFile();
+      if (file) {
+        s.appendChild(line(`  items[${i}].file.name`, file.name, 'ok'));
+        s.appendChild(line(`  items[${i}].file.size`, `${file.size} bytes (${(file.size/1024).toFixed(1)} KB)`, 'ok'));
+        s.appendChild(line(`  items[${i}].file.type`, file.type || '(empty)', file.type ? 'ok' : 'warn'));
+        s.appendChild(line(`  items[${i}].file.lastModified`, new Date(file.lastModified).toISOString(), 'ok'));
+
+        // read and preview
+        try {
+          const url = URL.createObjectURL(file);
+          showPreview(url, `items[${i}] — ${file.name}`);
+          s.appendChild(line(`  items[${i}].preview`, 'shown below', 'ok'));
+        } catch (err) {
+          s.appendChild(line(`  items[${i}].preview`, err.message, 'error'));
+        }
+
+        // read first bytes
+        try {
+          const buf = await file.slice(0, 16).arrayBuffer();
+          const hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join(' ');
+          s.appendChild(line(`  items[${i}].hex(0..15)`, hex));
+        } catch (err) {
+          s.appendChild(line(`  items[${i}].hex read error`, err.message, 'error'));
+        }
+      } else {
+        s.appendChild(line(`  items[${i}].getAsFile()`, 'returned null', 'error'));
+      }
+    }
+  }
+
+  // 3. Enumerate files (FileList)
+  if (dt.files.length > 0) {
+    const filesHeader = document.createElement('h2');
+    filesHeader.textContent = 'FileList (dt.files)';
+    filesHeader.style.cssText = 'font-size:13px;color:#4fc3f7;margin-top:12px;margin-bottom:6px;';
+    s.appendChild(filesHeader);
+
+    for (let i = 0; i < dt.files.length; i++) {
+      const f = dt.files[i];
+      s.appendChild(line(`  files[${i}].name`, f.name, 'ok'));
+      s.appendChild(line(`  files[${i}].size`, `${f.size} bytes`, 'ok'));
+      s.appendChild(line(`  files[${i}].type`, f.type || '(empty)', f.type ? 'ok' : 'warn'));
+    }
+  } else {
+    s.appendChild(line('FileList', 'EMPTY — no files in dt.files', 'warn'));
+  }
+
+  // 4. Try to read common string types
+  const stringTypes = ['text/plain', 'text/uri-list', 'text/html', 'text/x-moz-url', 'application/json'];
+  const foundStrings = [];
+  for (const t of stringTypes) {
+    try {
+      const val = dt.getData(t);
+      if (val) foundStrings.push({ type: t, value: val });
+    } catch (_) {}
+  }
+
+  if (foundStrings.length > 0) {
+    const strHeader = document.createElement('h2');
+    strHeader.textContent = 'String data (getData)';
+    strHeader.style.cssText = 'font-size:13px;color:#4fc3f7;margin-top:12px;margin-bottom:6px;';
+    s.appendChild(strHeader);
+
+    for (const { type, value } of foundStrings) {
+      s.appendChild(line(`  ${type}`, truncate(value, 500), 'ok'));
+
+      // if it looks like a URL, try to show it as an image
+      if (/^https?:\/\//i.test(value.trim())) {
+        const img = document.createElement('img');
+        img.src = value.trim();
+        img.title = `from ${type}`;
+        img.onerror = () => { img.remove(); };
+        previewArea.appendChild(img);
+        s.appendChild(line(`  (attempted image preview)`, value.trim().slice(0,80)));
+      }
+    }
+  }
+
+  // 5. Verdict
+  const verdict = document.createElement('h2');
+  verdict.textContent = 'Verdict';
+  verdict.style.cssText = 'font-size:13px;color:#4fc3f7;margin-top:12px;margin-bottom:6px;';
+  s.appendChild(verdict);
+
+  const hasFile = dt.files.length > 0;
+  const hasUri = foundStrings.some(s => s.type === 'text/uri-list');
+  const hasPlain = foundStrings.some(s => s.type === 'text/plain');
+
+  if (hasFile) {
+    s.appendChild(line('File delivery', `YES — ${dt.files.length} file(s) delivered`, 'ok'));
+  } else {
+    s.appendChild(line('File delivery', 'NO — dt.files is empty. Target sites that only check files will reject this drop.', 'error'));
+  }
+  if (hasUri) {
+    s.appendChild(line('URI-list', 'present', 'ok'));
+  }
+  if (hasPlain) {
+    s.appendChild(line('text/plain', 'present', 'ok'));
+  }
+  if (!hasFile && !hasUri && !hasPlain) {
+    s.appendChild(line('Overall', 'Drop contained nothing usable!', 'error'));
+  }
+
+  log.prepend(s);
+});
+</script>
+
+</body>
+</html>
