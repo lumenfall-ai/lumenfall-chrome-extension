@@ -55,24 +55,27 @@ function setupDragSource(element, item, card) {
   element.addEventListener("dragstart", (e) => {
     card.classList.add("dragging");
 
-    // Attach a real File so drop targets that expect dataTransfer.files work.
-    // This is indistinguishable from a file dragged from the OS file explorer.
+    // Chrome auto-populates dataTransfer when dragging an <img> — it adds its
+    // own file, text/html, and text/uri-list entries.  Clear them so we have
+    // full control over what the drop target receives (one clean File, one URL).
+    console.log("[drag] dragstart: browser default items.length:", e.dataTransfer.items.length);
+    for (let i = 0; i < e.dataTransfer.items.length; i++) {
+      const it = e.dataTransfer.items[i];
+      console.log("[drag] dragstart:   default[" + i + "]:", "kind=" + it.kind, "type=" + it.type);
+    }
+    e.dataTransfer.items.clear();
+    console.log("[drag] dragstart: cleared browser defaults, items.length:", e.dataTransfer.items.length);
+
     const blob = blobCache.get(item.url);
     console.log("[drag] dragstart: blob from cache:", blob ? `${blob.type} ${blob.size}B` : "MISS (not in cache)");
-    console.log("[drag] dragstart: blobCache size:", blobCache.size, "keys (first 80 chars):", [...blobCache.keys()].map(k => k.slice(0, 80)));
 
     if (blob) {
       const filename = lumenfallFilename(item.url);
       const file = new File([blob], filename, { type: blob.type || "image/png" });
-      console.log("[drag] dragstart: created File:", file.name, file.type, file.size, "bytes", "instanceof File:", file instanceof File);
+      console.log("[drag] dragstart: created File:", file.name, file.type, file.size, "bytes");
       try {
         e.dataTransfer.items.add(file);
         console.log("[drag] dragstart: items.add(file) OK — items.length:", e.dataTransfer.items.length);
-        // Log each item in the list
-        for (let i = 0; i < e.dataTransfer.items.length; i++) {
-          const it = e.dataTransfer.items[i];
-          console.log("[drag] dragstart:   item[" + i + "]:", "kind=" + it.kind, "type=" + it.type);
-        }
       } catch (err) {
         console.error("[drag] dragstart: items.add(file) FAILED:", err);
       }
@@ -93,7 +96,13 @@ function setupDragSource(element, item, card) {
     }
 
     e.dataTransfer.effectAllowed = "copy";
-    console.log("[drag] dragstart: final types:", [...e.dataTransfer.types], "effectAllowed:", e.dataTransfer.effectAllowed);
+
+    // Log the final state of the dataTransfer
+    console.log("[drag] dragstart: final items.length:", e.dataTransfer.items.length, "types:", [...e.dataTransfer.types]);
+    for (let i = 0; i < e.dataTransfer.items.length; i++) {
+      const it = e.dataTransfer.items[i];
+      console.log("[drag] dragstart:   final[" + i + "]:", "kind=" + it.kind, "type=" + it.type);
+    }
   });
 
   element.addEventListener("dragend", () => {
