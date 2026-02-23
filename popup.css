@@ -1510,7 +1510,21 @@ body {
   transition: opacity 150ms ease;
 }
 
-.gallery-thumb:hover .gallery-drag-bar {
+/* --- Drag permission banner --- */
+
+#dragPermissionBanner {
+  flex-wrap: wrap;
+}
+
+#dragPermissionBanner button {
+  font-size: 11px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.gallery-thumb:hover .gallery-drag-bar,
+.generate-result-img:hover .gallery-drag-bar,
+.brainstorm-card-img:hover .gallery-drag-bar {
   opacity: 1;
 }
 
@@ -1524,7 +1538,9 @@ body {
   vertical-align: middle;
 }
 
-.gallery-item.dragging {
+.gallery-item.dragging,
+.generate-result-card.dragging,
+.brainstorm-card.dragging {
   opacity: 0.5;
   transform: scale(0.97);
 }

@@ -55,13 +55,48 @@ function setupDragSource(element, item, card) {
 async function injectDragDropHelper() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (!tab?.id || !tab.url || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) return;
+    if (!tab?.id || !tab.url || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) return false;
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ["src/drag-drop-helper.js"]
     });
+    return true;
   } catch (_) {
-    // Injection may fail on restricted pages — drag will still work for URL-based targets
+    // Injection may fail on restricted pages or when host permission is missing
+    return false;
+  }
+}
+
+const _restrictedPrefixes = ["chrome://", "chrome-extension://", "about:", "edge://", "brave://"];
+
+async function checkDragPermission() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (!tab?.id || !tab.url) return { allowed: false, restricted: true };
+
+    if (_restrictedPrefixes.some((p) => tab.url.startsWith(p))) {
+      return { allowed: false, restricted: true };
+    }
+
+    const { protocol, host } = new URL(tab.url);
+    const origin = `${protocol}//${host}/*`;
+
+    const has = await chrome.permissions.contains({ origins: [origin] });
+    if (has) return { allowed: true, tab, origin, hostname: host };
+
+    return { allowed: false, restricted: false, origin, hostname: host, tab };
+  } catch {
+    return { allowed: false, restricted: true };
+  }
+}
+
+async function requestDragPermission(origin) {
+  try {
+    const granted = await chrome.permissions.request({ origins: [origin] });
+    if (granted) await injectDragDropHelper();
+    return granted;
+  } catch {
+    return false;
   }
 }
 

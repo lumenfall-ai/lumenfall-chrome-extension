@@ -61,6 +61,11 @@ const modelSelectorList = document.getElementById("modelSelectorList");
 const outputFormatSelect = document.getElementById("outputFormatSelect");
 const resetFormButton = document.getElementById("resetFormButton");
 const editModelWarning = document.getElementById("editModelWarning");
+const dragPermissionBanner = document.getElementById("dragPermissionBanner");
+const dragPermissionHost = document.getElementById("dragPermissionHost");
+const dragPermissionHostBtn = document.getElementById("dragPermissionHostBtn");
+const dragPermissionGrantSite = document.getElementById("dragPermissionGrantSite");
+const dragPermissionGrantAll = document.getElementById("dragPermissionGrantAll");
 
 /* --- State --- */
 
@@ -74,6 +79,41 @@ let chatModels = [];
 let allModels = []; // Full rich model list for the selector
 let generationModels = []; // image + edit models for the selector
 let pendingEditImages = [];
+let _pendingDragOrigin = null;
+
+/* --- Drag permission banner --- */
+
+async function updateDragPermissionBanner() {
+  const state = await checkDragPermission();
+  if (state.allowed || state.restricted) {
+    dragPermissionBanner.classList.add("hidden");
+    _pendingDragOrigin = null;
+    return;
+  }
+  _pendingDragOrigin = state.origin;
+  dragPermissionHost.textContent = state.hostname;
+  dragPermissionHostBtn.textContent = state.hostname;
+  dragPermissionBanner.classList.remove("hidden");
+}
+
+dragPermissionGrantSite.addEventListener("click", async () => {
+  if (!_pendingDragOrigin) return;
+  await requestDragPermission(_pendingDragOrigin);
+  updateDragPermissionBanner();
+});
+
+dragPermissionGrantAll.addEventListener("click", async () => {
+  try {
+    const granted = await chrome.permissions.request({ origins: ["https://*/*"] });
+    if (granted) await injectDragDropHelper();
+  } catch {}
+  updateDragPermissionBanner();
+});
+
+chrome.tabs.onActivated.addListener(() => updateDragPermissionBanner());
+chrome.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+  if (changeInfo.status === "complete") updateDragPermissionBanner();
+});
 
 /* --- Tabs --- */
 
@@ -84,6 +124,7 @@ function setTabs(activeTab) {
     refreshGallery();
     hideGalleryBadge();
   }
+  updateDragPermissionBanner();
 }
 
 tabs.forEach((tab) => tab.addEventListener("click", () => setTabs(tab.dataset.tab)));
@@ -692,6 +733,13 @@ function fillGenerateResult(index, imageUrl, prompt) {
   setupDragSource(img, { url: imageUrl, prompt }, card);
   imgWrap.appendChild(img);
 
+  const dragBar = document.createElement("div");
+  dragBar.className = "gallery-drag-bar";
+  dragBar.title = "Drag image to another app or page";
+  dragBar.innerHTML = '<span class="gallery-grip-icon">⠿</span> Drag';
+  setupDragSource(dragBar, { url: imageUrl, prompt }, card);
+  imgWrap.appendChild(dragBar);
+
   // Actions
   const actions = document.createElement("div");
   actions.className = "generate-result-actions";
@@ -823,6 +871,9 @@ async function loadSettings() {
 
   // Initial cost estimate (non-blocking)
   debouncedCostEstimate();
+
+  // Check drag permission for the active tab
+  updateDragPermissionBanner();
 }
 
 /* --- Settings event listeners --- */
@@ -1332,6 +1383,10 @@ async function getPageText() {
     if (!tab?.id || !tab.url || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) {
       return { title: "", text: "" };
     }
+    // Ensure we have host permission before injecting (the brainstorm button click
+    // that calls this function provides the user-gesture context for the request).
+    const granted = await ensureHostAccess(tab.url);
+    if (!granted) return { title: "", text: "" };
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
@@ -1451,7 +1506,15 @@ function fillBrainstormCard(card, imageUrl, prompt) {
   img.src = imageUrl;
   img.alt = prompt;
   img.loading = "lazy";
+  setupDragSource(img, { url: imageUrl, prompt }, card);
   imgWrap.appendChild(img);
+
+  const dragBar = document.createElement("div");
+  dragBar.className = "gallery-drag-bar";
+  dragBar.title = "Drag image to another app or page";
+  dragBar.innerHTML = '<span class="gallery-grip-icon">⠿</span> Drag';
+  setupDragSource(dragBar, { url: imageUrl, prompt }, card);
+  imgWrap.appendChild(dragBar);
 
   // Show actions
   const actions = card.querySelector(".brainstorm-card-actions");

@@ -108,6 +108,13 @@
       </button>
     </section>
 
+    <!-- Drag & drop permission banner (shown when host access is needed) -->
+    <div id="dragPermissionBanner" class="info-banner hidden">
+      <span>Page access needed for drag&nbsp;&amp;&nbsp;drop to <strong id="dragPermissionHost">this page</strong>.</span>
+      <button id="dragPermissionGrantSite" class="secondary">Enable for <span id="dragPermissionHostBtn">this site</span></button>
+      <button id="dragPermissionGrantAll" class="secondary">Enable everywhere</button>
+    </div>
+
     <!-- Generate tab -->
     <section class="tab-panel active" data-tab-panel="generate">
       <div id="apiWarning" class="warning hidden"></div>
