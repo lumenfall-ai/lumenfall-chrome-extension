@@ -12,6 +12,11 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
+// Smallest valid 1x1 transparent PNG (~67 bytes). Used as a dummy File in
+// dataTransfer so that dataTransfer.types includes "Files" — many dropzone
+// libraries check for this during dragover to decide whether to accept a drag.
+const _PIXEL_PNG = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQI12NgAAIABQABNjN9GQAAAABJRUEFTkSuQmCC"), c => c.charCodeAt(0));
+
 let _lastDragInjectionFailed = false;
 let _onDragPermissionNeeded = null;
 
@@ -22,11 +27,15 @@ function setupDragSource(element, item, card) {
     _lastDragInjectionFailed = false;
 
     if (item.url.startsWith("data:")) {
-      // Don't add a File to dataTransfer — Chrome serializes it
-      // unpredictably when crossing the extension → page boundary,
-      // causing data-URL redirects on some sites.
-      // The content script (drag-drop-helper.js) reconstructs a proper
-      // File on the target page — that's the only reliable path.
+      // Add a tiny dummy file so dataTransfer.types includes "Files" —
+      // many dropzone libraries check this during dragover to accept the drag.
+      // The real image is delivered by the content script on drop.
+      // Using a 1x1 transparent PNG (~67 bytes) avoids the data-URL redirect
+      // issue that occurred with the full image.
+      try {
+        const dummy = new File([_PIXEL_PNG], lumenfallFilename(item.url), { type: "image/png" });
+        e.dataTransfer.items.add(dummy);
+      } catch (_) {}
       e.dataTransfer.setData("text/plain", lumenfallFilename(item.url));
     } else {
       e.dataTransfer.setData("text/uri-list", item.url);
@@ -60,7 +69,7 @@ async function injectDragDropHelper() {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     if (!tab?.id || !tab.url || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) return false;
     await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
+      target: { tabId: tab.id, allFrames: true },
       files: ["src/drag-drop-helper.js"]
     });
     return true;

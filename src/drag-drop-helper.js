@@ -84,7 +84,15 @@
       const syntheticDrop = new DragEvent("drop", {
         bubbles: true,
         cancelable: true,
-        dataTransfer: dt
+        dataTransfer: dt,
+        clientX: e.clientX,
+        clientY: e.clientY,
+        screenX: e.screenX,
+        screenY: e.screenY,
+        altKey: e.altKey,
+        ctrlKey: e.ctrlKey,
+        shiftKey: e.shiftKey,
+        metaKey: e.metaKey,
       });
 
       // Prevent the original (empty) drop from being handled
