@@ -84,7 +84,19 @@ Queries the active tab's URL to determine whether the extension already has host
 **Host permission (`https://api.lumenfall.ai/*`)**
 
 ```
-The extension sends all API requests to api.lumenfall.ai — image generation, image editing, model listing, and brainstorm chat completions. This is the only host the extension contacts. Generated images are returned inline as base64 data, not fetched from a separate host. The broad optional host permission (https://*/*) is not requested at install — Chrome prompts users individually when they first try to fetch an image from a third-party site for editing.
+The extension sends all API requests to api.lumenfall.ai — image generation, image editing, model listing, and brainstorm chat completions. This is the only host the extension contacts. Generated images are returned inline as base64 data, not fetched from a separate host.
+```
+
+**Optional host permission (`https://*/*`)**
+
+```
+Declared as optional and never granted at install. The extension requests access to individual sites only when the user explicitly initiates one of two features:
+
+1. Drag-and-drop: When a user drags a generated image from the gallery onto a web page, the extension needs to inject a small helper script into that page so file-upload dropzones accept the image as a proper File object. If the extension does not yet have access to the target site, a banner appears in the side panel with two choices: "Enable for [site]" (requests access to that single origin) or "Enable everywhere" (requests broad access). The user must click one of these buttons to trigger Chrome's permission prompt.
+
+2. Brainstorm mode: When the user clicks "Brainstorm this page," the extension needs to read the page's text content to generate contextual image prompts. If access has not been granted, Chrome's permission dialog appears before any content is read.
+
+No host access is requested silently or in the background. The user always sees a Chrome permission prompt before any site access is granted.
 ```
 
 ### Remote code
