@@ -81,18 +81,17 @@ function setupDragSource(element, item, card) {
       }
     }
 
-    // Set URL fallbacks for targets that accept URLs (e.g. WYSIWYG editors)
-    if (item.url.startsWith("data:")) {
-      const urlBlob = blob || dataUrlToBlob(item.url);
-      const blobUrl = URL.createObjectURL(urlBlob);
-      e.dataTransfer.setData("text/uri-list", blobUrl);
-      e.dataTransfer.setData("text/plain", blobUrl);
-      console.log("[drag] dragstart: set text/uri-list → blob URL:", blobUrl);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-    } else {
+    // For remote URLs, set text/uri-list so targets that accept URLs (e.g.
+    // WYSIWYG editors) can fetch the image themselves.  For data-URL images we
+    // intentionally omit text/uri-list — the only URL we could provide is a
+    // blob:chrome-extension:// URL which is invisible to web pages and causes
+    // sites to either navigate away or silently fail.
+    if (!item.url.startsWith("data:")) {
       e.dataTransfer.setData("text/uri-list", item.url);
       e.dataTransfer.setData("text/plain", item.url);
       console.log("[drag] dragstart: set text/uri-list →", item.url.slice(0, 80));
+    } else {
+      console.log("[drag] dragstart: data URL image — skipping text/uri-list (blob URLs are extension-scoped)");
     }
 
     e.dataTransfer.effectAllowed = "copy";
