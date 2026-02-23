@@ -22,18 +22,12 @@ function setupDragSource(element, item, card) {
     _lastDragInjectionFailed = false;
 
     if (item.url.startsWith("data:")) {
-      const blob = dataUrlToBlob(item.url);
-      const file = new File([blob], lumenfallFilename(item.url), { type: blob.type || "image/png" });
-      try {
-        e.dataTransfer.items.add(file);
-      } catch (_) {
-        // Fallback: some browsers don't support items.add(File)
-      }
-      // Don't set text/uri-list to a blob:chrome-extension:// URL — it's
-      // extension-scoped, inaccessible to web pages, and causes the browser
-      // to navigate to it on sites without a file-upload dropzone.
-      // Use the filename as benign text/plain fallback instead.
-      e.dataTransfer.setData("text/plain", file.name);
+      // Don't add a File to dataTransfer — Chrome serializes it
+      // unpredictably when crossing the extension → page boundary,
+      // causing data-URL redirects on some sites.
+      // The content script (drag-drop-helper.js) reconstructs a proper
+      // File on the target page — that's the only reliable path.
+      e.dataTransfer.setData("text/plain", lumenfallFilename(item.url));
     } else {
       e.dataTransfer.setData("text/uri-list", item.url);
       e.dataTransfer.setData("text/plain", item.url);

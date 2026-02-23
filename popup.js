@@ -103,18 +103,23 @@ async function showDragPermissionBanner() {
 _onDragPermissionNeeded = () => showDragPermissionBanner();
 
 dragPermissionGrantSite.addEventListener("click", async () => {
-  if (!_pendingDragOrigin) return;
-  await requestDragPermission(_pendingDragOrigin);
-  hideDragPermissionBanner();
+  const origin = _pendingDragOrigin;
+  if (!origin) return;
+  hideDragPermissionBanner(); // Hide immediately — responsive UX
+  await requestDragPermission(origin);
 });
 
 dragPermissionGrantAll.addEventListener("click", async () => {
+  hideDragPermissionBanner(); // Hide immediately
   try {
     const granted = await chrome.permissions.request({ origins: ["https://*/*"] });
     if (granted) await injectDragDropHelper();
   } catch {}
-  hideDragPermissionBanner();
 });
+
+// Hide the banner when the user switches browser tabs — the banner is
+// contextual to the tab where the drag failed, not a global state.
+chrome.tabs.onActivated.addListener(() => hideDragPermissionBanner());
 
 /* --- Tabs --- */
 
