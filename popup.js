@@ -62,7 +62,7 @@ const outputFormatSelect = document.getElementById("outputFormatSelect");
 const resetFormButton = document.getElementById("resetFormButton");
 const editModelWarning = document.getElementById("editModelWarning");
 const dragPermissionBanner = document.getElementById("dragPermissionBanner");
-const dragPermissionHost = document.getElementById("dragPermissionHost");
+const dragPermissionMessage = document.getElementById("dragPermissionMessage");
 const dragPermissionHostBtn = document.getElementById("dragPermissionHostBtn");
 const dragPermissionGrantSite = document.getElementById("dragPermissionGrantSite");
 const dragPermissionGrantAll = document.getElementById("dragPermissionGrantAll");
@@ -81,25 +81,31 @@ let generationModels = []; // image + edit models for the selector
 let pendingEditImages = [];
 let _pendingDragOrigin = null;
 
-/* --- Drag permission banner --- */
+/* --- Drag permission banner (reactive — shown after a failed drag attempt) --- */
 
-async function updateDragPermissionBanner() {
+function hideDragPermissionBanner() {
+  dragPermissionBanner.classList.add("hidden");
+  _pendingDragOrigin = null;
+}
+
+async function showDragPermissionBanner() {
   const state = await checkDragPermission();
   if (state.allowed || state.restricted) {
-    dragPermissionBanner.classList.add("hidden");
-    _pendingDragOrigin = null;
+    hideDragPermissionBanner();
     return;
   }
   _pendingDragOrigin = state.origin;
-  dragPermissionHost.textContent = state.hostname;
   dragPermissionHostBtn.textContent = state.hostname;
   dragPermissionBanner.classList.remove("hidden");
 }
 
+// Hook into gallery.js — called on dragend when content-script injection failed.
+_onDragPermissionNeeded = () => showDragPermissionBanner();
+
 dragPermissionGrantSite.addEventListener("click", async () => {
   if (!_pendingDragOrigin) return;
   await requestDragPermission(_pendingDragOrigin);
-  updateDragPermissionBanner();
+  hideDragPermissionBanner();
 });
 
 dragPermissionGrantAll.addEventListener("click", async () => {
@@ -107,12 +113,7 @@ dragPermissionGrantAll.addEventListener("click", async () => {
     const granted = await chrome.permissions.request({ origins: ["https://*/*"] });
     if (granted) await injectDragDropHelper();
   } catch {}
-  updateDragPermissionBanner();
-});
-
-chrome.tabs.onActivated.addListener(() => updateDragPermissionBanner());
-chrome.tabs.onUpdated.addListener((_tabId, changeInfo) => {
-  if (changeInfo.status === "complete") updateDragPermissionBanner();
+  hideDragPermissionBanner();
 });
 
 /* --- Tabs --- */
@@ -124,7 +125,6 @@ function setTabs(activeTab) {
     refreshGallery();
     hideGalleryBadge();
   }
-  updateDragPermissionBanner();
 }
 
 tabs.forEach((tab) => tab.addEventListener("click", () => setTabs(tab.dataset.tab)));
@@ -871,9 +871,6 @@ async function loadSettings() {
 
   // Initial cost estimate (non-blocking)
   debouncedCostEstimate();
-
-  // Check drag permission for the active tab
-  updateDragPermissionBanner();
 }
 
 /* --- Settings event listeners --- */
@@ -1386,7 +1383,7 @@ async function getPageText() {
     // Ensure we have host permission before injecting (the brainstorm button click
     // that calls this function provides the user-gesture context for the request).
     const granted = await ensureHostAccess(tab.url);
-    if (!granted) return { title: "", text: "" };
+    if (!granted) return { title: "", text: "", denied: true };
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
@@ -1628,7 +1625,11 @@ brainstormButton.addEventListener("click", async () => {
     // Step 1: Extract page text
     const pageText = await getPageText();
     if (!pageText.text) {
-      brainstormStatus.textContent = "No page content found. Navigate to an article and try again.";
+      if (pageText.denied) {
+        brainstormStatus.textContent = 'Page access was denied. Click "Brainstorm this page" again to retry.';
+      } else {
+        brainstormStatus.textContent = "No page content found. Navigate to an article and try again.";
+      }
       return;
     }
 

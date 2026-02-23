@@ -12,12 +12,15 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
+let _lastDragInjectionFailed = false;
+let _onDragPermissionNeeded = null;
+
 function setupDragSource(element, item, card) {
   element.draggable = true;
   element.addEventListener("dragstart", (e) => {
     card.classList.add("dragging");
+    _lastDragInjectionFailed = false;
 
-    // Set URL data for simple drop targets (e.g. another browser tab)
     if (item.url.startsWith("data:")) {
       const blob = dataUrlToBlob(item.url);
       const file = new File([blob], lumenfallFilename(item.url), { type: blob.type || "image/png" });
@@ -26,10 +29,11 @@ function setupDragSource(element, item, card) {
       } catch (_) {
         // Fallback: some browsers don't support items.add(File)
       }
-      const blobUrl = URL.createObjectURL(blob);
-      e.dataTransfer.setData("text/uri-list", blobUrl);
-      e.dataTransfer.setData("text/plain", blobUrl);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      // Don't set text/uri-list to a blob:chrome-extension:// URL — it's
+      // extension-scoped, inaccessible to web pages, and causes the browser
+      // to navigate to it on sites without a file-upload dropzone.
+      // Use the filename as benign text/plain fallback instead.
+      e.dataTransfer.setData("text/plain", file.name);
     } else {
       e.dataTransfer.setData("text/uri-list", item.url);
       e.dataTransfer.setData("text/plain", item.url);
@@ -42,13 +46,18 @@ function setupDragSource(element, item, card) {
     const dataUrl = item.url.startsWith("data:") ? item.url : null;
     if (dataUrl) {
       chrome.storage.local.set({ pendingDragImage: dataUrl });
-      injectDragDropHelper();
+      injectDragDropHelper().then((ok) => {
+        if (!ok) _lastDragInjectionFailed = true;
+      });
     }
   });
   element.addEventListener("dragend", () => {
     card.classList.remove("dragging");
-    // Clean up pending drag data
     chrome.storage.local.remove("pendingDragImage");
+    if (_lastDragInjectionFailed) {
+      _lastDragInjectionFailed = false;
+      if (_onDragPermissionNeeded) _onDragPermissionNeeded();
+    }
   });
 }
 

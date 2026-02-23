@@ -108,9 +108,9 @@
       </button>
     </section>
 
-    <!-- Drag & drop permission banner (shown when host access is needed) -->
+    <!-- Drag & drop permission banner (shown after a failed drag attempt) -->
     <div id="dragPermissionBanner" class="info-banner hidden">
-      <span>Page access needed for drag&nbsp;&amp;&nbsp;drop to <strong id="dragPermissionHost">this page</strong>.</span>
+      <span id="dragPermissionMessage">Page access is needed to drag images to web pages.</span>
       <button id="dragPermissionGrantSite" class="secondary">Enable for <span id="dragPermissionHostBtn">this site</span></button>
       <button id="dragPermissionGrantAll" class="secondary">Enable everywhere</button>
     </div>

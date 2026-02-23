@@ -41,6 +41,19 @@
 
   loadPendingImage();
 
+  // Handle dragover in capturing phase — call preventDefault() so the browser
+  // dispatches the subsequent drop event.  Without this, pages that don't have
+  // their own dragover handler would swallow the drop silently (per HTML DnD spec).
+  document.addEventListener(
+    "dragover",
+    (e) => {
+      if (!pendingImageDataUrl) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    },
+    true // capturing phase
+  );
+
   // Listen for drop events in the capturing phase so we run before the page's
   // own handler.  If we have a pending image, stop the original event and
   // re-dispatch a synthetic one that carries a proper File.
