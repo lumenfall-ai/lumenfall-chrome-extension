@@ -21,22 +21,30 @@ function dataUrlToBlob(dataUrl) {
 const blobCache = new Map();
 
 async function prefetchBlob(imageUrl) {
-  if (blobCache.has(imageUrl)) return;
+  if (blobCache.has(imageUrl)) {
+    console.log("[drag] prefetchBlob: cache hit", imageUrl.slice(0, 80));
+    return;
+  }
   try {
+    let blob;
     if (imageUrl.startsWith("data:")) {
-      blobCache.set(imageUrl, dataUrlToBlob(imageUrl));
+      blob = dataUrlToBlob(imageUrl);
+      console.log("[drag] prefetchBlob: converted data URL →", blob.type, blob.size, "bytes");
     } else {
       const res = await fetch(imageUrl);
-      const blob = await res.blob();
-      blobCache.set(imageUrl, blob);
+      blob = await res.blob();
+      console.log("[drag] prefetchBlob: fetched remote →", blob.type, blob.size, "bytes", imageUrl.slice(0, 80));
     }
-  } catch (_) {
-    // Non-fatal — drag will still carry URL fallbacks
+    blobCache.set(imageUrl, blob);
+  } catch (err) {
+    console.error("[drag] prefetchBlob: FAILED for", imageUrl.slice(0, 80), err);
   }
 }
 
 function setupDragSource(element, item, card) {
   element.draggable = true;
+
+  console.log("[drag] setupDragSource:", element.tagName, "url type:", item.url.startsWith("data:") ? "data:" + item.url.slice(5, 30) : item.url.slice(0, 80));
 
   // Prefetch immediately so the blob is ready for dragstart
   prefetchBlob(item.url);
@@ -50,12 +58,23 @@ function setupDragSource(element, item, card) {
     // Attach a real File so drop targets that expect dataTransfer.files work.
     // This is indistinguishable from a file dragged from the OS file explorer.
     const blob = blobCache.get(item.url);
+    console.log("[drag] dragstart: blob from cache:", blob ? `${blob.type} ${blob.size}B` : "MISS (not in cache)");
+    console.log("[drag] dragstart: blobCache size:", blobCache.size, "keys (first 80 chars):", [...blobCache.keys()].map(k => k.slice(0, 80)));
+
     if (blob) {
-      const file = new File([blob], lumenfallFilename(item.url), { type: blob.type || "image/png" });
+      const filename = lumenfallFilename(item.url);
+      const file = new File([blob], filename, { type: blob.type || "image/png" });
+      console.log("[drag] dragstart: created File:", file.name, file.type, file.size, "bytes", "instanceof File:", file instanceof File);
       try {
         e.dataTransfer.items.add(file);
-      } catch (_) {
-        // Fallback: some browsers don't support items.add(File)
+        console.log("[drag] dragstart: items.add(file) OK — items.length:", e.dataTransfer.items.length);
+        // Log each item in the list
+        for (let i = 0; i < e.dataTransfer.items.length; i++) {
+          const it = e.dataTransfer.items[i];
+          console.log("[drag] dragstart:   item[" + i + "]:", "kind=" + it.kind, "type=" + it.type);
+        }
+      } catch (err) {
+        console.error("[drag] dragstart: items.add(file) FAILED:", err);
       }
     }
 
@@ -65,17 +84,21 @@ function setupDragSource(element, item, card) {
       const blobUrl = URL.createObjectURL(urlBlob);
       e.dataTransfer.setData("text/uri-list", blobUrl);
       e.dataTransfer.setData("text/plain", blobUrl);
+      console.log("[drag] dragstart: set text/uri-list → blob URL:", blobUrl);
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
     } else {
       e.dataTransfer.setData("text/uri-list", item.url);
       e.dataTransfer.setData("text/plain", item.url);
+      console.log("[drag] dragstart: set text/uri-list →", item.url.slice(0, 80));
     }
 
     e.dataTransfer.effectAllowed = "copy";
+    console.log("[drag] dragstart: final types:", [...e.dataTransfer.types], "effectAllowed:", e.dataTransfer.effectAllowed);
   });
 
   element.addEventListener("dragend", () => {
     card.classList.remove("dragging");
+    console.log("[drag] dragend");
   });
 }
 
